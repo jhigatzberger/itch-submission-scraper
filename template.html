@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Engine Distribution Pie Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+      body { font-family: sans-serif; }
+      #myChart { max-width: 400px; margin: 40px auto; }
+    </style>
+  </head>
+  <body>
+    <h2>Engine Distribution</h2>
+    <canvas id="myChart"></canvas>
+    <script>
+
+      const gameData = "###GAME_DATA###";
+      drawChart(gameData);
+
+
+
+      function drawChart(gameData) {
+        // Tally up the engines
+        const counts = {};
+        for (const row of gameData) {
+          counts[row.engine] = (counts[row.engine] || 0) + 1;
+        }
+        const labels = Object.keys(counts);
+        const values = Object.values(counts);
+
+        const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA88DD', '#DD8888', '#66CCCC'];
+
+        new Chart(document.getElementById('myChart'), {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: COLORS,
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { position: 'bottom' },
+              datalabels: {
+                color: '#222',
+                font: { weight: 'bold', size: 14 },
+                formatter: (value, context) => {
+                  const label = context.chart.data.labels[context.dataIndex];
+                  return label + '\n' + value;
+                }
+              }
+            }
+          },
+          plugins: [ChartDataLabels]
+        });
+      }
+    </script>
+  </body>
+</html>
