@@ -5,15 +5,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
-      body { font-family: sans-serif; }
-      #myChart { max-width: 400px; margin: 40px auto; }
+      body {
+        font-family: sans-serif;
+      }
+      #myChart {
+        max-width: 400px;
+        margin: 40px auto;
+      }
     </style>
   </head>
   <body>
     <h2>Engine Distribution</h2>
     <canvas id="myChart"></canvas>
     <script>
-
       const gameData = [
   {
     "id": "3736082",
@@ -3656,44 +3660,60 @@
     "engine": "godot"
   }
 ];
-      drawChart(gameData);
 
+      // Deduplicate by id
+      const map = new Map();
+      for (const row of gameData) {
+        map.set(row.id, row); // If you want "first wins", do: if (!map.has(row.id)) map.set(row.id, row);
+      }
+      const dedupedData = Array.from(map.values());
 
+      drawChart(dedupedData);
 
-      function drawChart(gameData) {
+      function drawChart(data) {
         // Tally up the engines
         const counts = {};
-        for (const row of gameData) {
+        for (const row of data) {
           counts[row.engine] = (counts[row.engine] || 0) + 1;
         }
         const labels = Object.keys(counts);
         const values = Object.values(counts);
 
-        const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA88DD', '#DD8888', '#66CCCC'];
+        const COLORS = [
+          "#0088FE",
+          "#00C49F",
+          "#FFBB28",
+          "#FF8042",
+          "#AA88DD",
+          "#DD8888",
+          "#66CCCC",
+        ];
 
-        new Chart(document.getElementById('myChart'), {
-          type: 'pie',
+        new Chart(document.getElementById("myChart"), {
+          type: "pie",
           data: {
             labels: labels,
-            datasets: [{
-              data: values,
-              backgroundColor: COLORS,
-            }]
+            datasets: [
+              {
+                data: values,
+                backgroundColor: COLORS,
+              },
+            ],
           },
           options: {
             plugins: {
-              legend: { position: 'bottom' },
+              legend: { position: "bottom" },
               datalabels: {
-                color: '#222',
-                font: { weight: 'bold', size: 14 },
+                color: "#222",
+                font: { weight: "bold", size: 14 },
                 formatter: (value, context) => {
                   const label = context.chart.data.labels[context.dataIndex];
-                  return label + '\n' + value;
-                }
-              }
-            }
+                  return label + "\n" + value;
+                },
+              },
+            },
           },
-          plugins: [ChartDataLabels]
+          plugins: [ChartDataLabels],
         });
       }
     </script>
